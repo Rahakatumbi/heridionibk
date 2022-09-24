@@ -1,0 +1,3 @@
+#[run dim]
+runtime: go118
+main: main.go

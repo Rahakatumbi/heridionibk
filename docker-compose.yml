@@ -1,0 +1,59 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    # volumes:
+    #   - .:/my-db
+    depends_on:
+      - db
+    container_name: heridioni
+    environment:
+      # DB_PORT: 3306
+      # DB_HOST: "db"
+      # DB_DATABASE: "coffeedb"
+      # DB_USER: "root"
+      # DB_PASSWORD: "admin"
+      # DB_ROOT_PASSWORD: admin
+      DB_USER: 'root'
+      DB_PASSWORD: 'admin'
+      DB_HOST: 'db'
+      DB_PORT: 3306
+      DB_DATABASE: 'coffeedb'
+    networks:
+      - mynet
+  db:
+    image: mysql:5.7
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: coffeedb
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    ports:
+      - "3306:3306"
+    volumes:
+      - my-db:/var/lib/mysql
+    networks:
+      - mynet
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    links:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    restart: always
+    ports:
+      - 8000:80
+    networks:
+      - mynet
+volumes:
+  my-db:
+networks:
+  mynet:
+    driver: bridge
