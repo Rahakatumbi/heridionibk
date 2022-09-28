@@ -10,5 +10,6 @@ type Invoice struct {
 	BanqueId   int     `json:"banque_id"`
 	Bordereau  string  `json:"bordereau"`
 	CreatedBy  int     `json:"creator"`
+	OrderId    int     `json:"order_id"`
 	gorm.Model
 }

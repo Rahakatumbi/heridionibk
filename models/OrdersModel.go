@@ -6,7 +6,7 @@ type Orders struct {
 	Id              uint   `json:"id" gorm:"primary_id"`
 	Type            int    `json:"type"`
 	ClientId        int    `json:"client_id"`
-	Status          int    `json:"status"`
+	Status          int    `json:"status"` //1.facturation 2. balance exist 3.complete
 	LieuDeLivraison string `json:"lieu_de_livraison"`
 	ModeDePayement  int    `json:"mode_de_payement"` //1.CIF,2.FOB,
 	Creator         int    `json:"creator"`
@@ -20,6 +20,7 @@ type OrdersInfo struct {
 	Quantity       float32 `json:"quantity"`
 	Echeance       string  `json:"echeance"`
 	ServedQuantity float32 `json:"served_quantity"`
+	Price          float32 `json:"price"`
 	gorm.Model
 }
 type FinancementOrder struct {

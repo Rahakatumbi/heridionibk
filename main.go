@@ -1,7 +1,7 @@
 package main
 
 import (
-	handler "github.com/Raha2071/heridionibd/api"
+	"github.com/Raha2071/heridionibd/api"
 	"github.com/Raha2071/heridionibd/config"
 	"github.com/Raha2071/heridionibd/infrastructure"
 	"github.com/gin-gonic/gin"
@@ -22,7 +22,7 @@ func main() {
 
 	}))
 	router := app.Group("/api/v1")
-	handler.Setup(router)
+	api.Setup(router)
 	infrastructure.LoadEnv()
 	// infrastructure.NewDatabase() //new database connection
 	config.SetupDB()

@@ -1,4 +1,4 @@
-package handler
+package api
 
 import (
 	"github.com/Raha2071/heridionibd/controller"
@@ -6,6 +6,7 @@ import (
 	"github.com/Raha2071/heridionibd/controller/banque"
 	"github.com/Raha2071/heridionibd/controller/clients"
 	"github.com/Raha2071/heridionibd/controller/products"
+	"github.com/Raha2071/heridionibd/controller/rapports"
 	"github.com/Raha2071/heridionibd/controller/ventes"
 	"github.com/gin-gonic/gin"
 )
@@ -22,6 +23,7 @@ func Setup(app *gin.RouterGroup) {
 		admin.GET("/achat", achats.Achats)
 		admin.GET("/order", ventes.Orders)
 		admin.POST("/order", ventes.Order)
+		admin.POST("/facturation", ventes.Facturation)
 		admin.GET("/order/:id", ventes.OrderInfos)
 		admin.POST("/solveOrder", ventes.SolveOrder)
 		admin.POST("/product", products.Product)
@@ -37,6 +39,8 @@ func Setup(app *gin.RouterGroup) {
 		admin.GET("/champ/:id", clients.Champs)
 		admin.GET("/supllier", clients.Suppliers)
 		admin.POST("/supllier", clients.Supllier)
+		admin.POST("/arapport", rapports.Approvisionnement)
+		admin.POST("/epport", rapports.Facturation)
 		admin.GET("/supllier/:id", clients.Search)
 		admin.POST("/login", controller.Login)
 	}
