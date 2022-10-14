@@ -84,17 +84,20 @@ func ResponseAchats(ac models.AchatsInfos, Name models.Products) AchatM {
 func DepotData(c *gin.Context) {
 	var achats []models.Achats
 	var info []AchatM
-	config.DB.Find(&achats, "branche_id=?", c.Param("id"))
-	for _, achat := range achats {
-		var data []models.AchatsInfos
-		config.DB.Find(&data, "achat_id", achat.Id)
-		for _, item := range data {
-			var product models.Products
-			config.DB.Find(&product, "id=?", item.ProduitId)
-			responseOrder := ResponseAchats(item, product)
-			info = append(info, responseOrder)
-		}
-	}
+	config.DB.Select("achats.branche_id,achats.id as achatId,achats.supplier_id,achats_infos.id as id,achats_infos.achat_id,achats_infos.produit_id,achats_infos.kgs,achats_infos.unit_price as price,achats_infos.qualite,achats_infos.used_quantity,products.id as productId,products.names").
+		Joins("inner join branches on branches.id=achats.branche_id").Joins("inner join achats_infos on achats_infos.achat_id=achatId").
+		Joins("inner join products on productId = achats_infos.produit_id").
+		Find(&achats, "achats.branche_id=?", c.Param("id")).Scan(&info)
+	// for _, achat := range achats {
+	// 	var data []models.AchatsInfos
+	// 	config.DB.Find(&data, "achat_id", achat.Id)
+	// 	for _, item := range data {
+	// 		var product models.Products
+	// 		config.DB.Find(&product, "id=?", item.ProduitId)
+	// 		responseOrder := ResponseAchats(item, product)
+	// 		info = append(info, responseOrder)
+	// 	}
+	// }
 	if len(info) > 0 {
 		c.JSON(200, info)
 	} else {

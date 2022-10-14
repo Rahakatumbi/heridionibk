@@ -1,23 +1,21 @@
 package ventes
 
 import (
-	"time"
-
 	"github.com/Raha2071/heridionibd/config"
 	"github.com/Raha2071/heridionibd/models"
 	"github.com/gin-gonic/gin"
 )
 
 type ResponseData struct {
-	Id              uint                `json:"id" gorm:"primary_id"`
-	ClientId        int                 `json:"client_id"`
-	Type            int                 `json:"type"`
-	Status          int                 `json:"status"`
-	LieuDeLivraison string              `json:"lieu_de_livraison"`
-	ModeDePayement  int                 `json:"mode_de_payement"` //1.CIF,2.FOB,
-	CreateAt        time.Time           `json:"createdAt"`
-	Names           string              `json:"names"`
-	Infos           []models.OrdersInfo `json:"info"`
+	Id              uint   `json:"id" gorm:"primary_id"`
+	ClientId        int    `json:"client_id"`
+	Type            int    `json:"type"`
+	Status          int    `json:"status"`
+	LieuDeLivraison string `json:"lieu_de_livraison"`
+	ModeDePayement  int    `json:"mode_de_payement"` //1.CIF,2.FOB,
+	CreatedAt       string `json:"createdAt" format:"02-january-2006:15:04"`
+	Names           string `json:"names"`
+	//Infos           []models.OrdersInfo `json:"info"`
 }
 type Data struct {
 	Id              uint    `json:"id" gorm:"primary_id"`
@@ -64,21 +62,11 @@ func Order(c *gin.Context) {
 	}
 	c.JSON(200, post)
 }
-func ResponseOrder(Order models.Orders, Info []models.OrdersInfo, cl models.Clients) ResponseData {
-	return ResponseData{Id: Order.Id, Names: cl.Names, Status: Order.Status, CreateAt: Order.CreatedAt, ClientId: Order.ClientId, LieuDeLivraison: Order.LieuDeLivraison, Type: Order.Type, ModeDePayement: Order.ModeDePayement, Infos: Info}
-}
 func Orders(c *gin.Context) {
 	var orders []models.Orders
 	var helper []ResponseData
-	config.DB.Find(&orders)
-	for _, data := range orders {
-		var info []models.OrdersInfo
-		var client models.Clients
-		config.DB.Find(&info, "order_id=?", data.Id)
-		config.DB.Find(&client, "id=?", data.ClientId)
-		ResponseData := ResponseOrder(data, info, client)
-		helper = append(helper, ResponseData)
-	}
+	//config.DB.Find(&orders
+	config.DB.Model(&orders).Select("orders.id as id,orders.type,orders.created_at,orders.mode_de_payement,orders.status,orders.client_id,clients.id as clientId,clients.names").Joins("inner join clients on clientId=orders.client_id").Scan(&helper)
 	if len(helper) > 0 {
 		c.JSON(200, helper)
 	} else {
@@ -103,13 +91,14 @@ func ResponseInfo(info models.OrdersInfo, pro models.Products) Inforesponse {
 func OrderInfos(c *gin.Context) {
 	var info []models.OrdersInfo
 	var help []Inforesponse
-	config.DB.Select("id,order_id,produit_id,quality,quantity,echeance,served_quantity").Find(&info, "order_id=?", c.Param("id"))
-	for _, data := range info {
-		var pr models.Products
-		config.DB.Select("names,id").Where("id", data.ProduitId).Find(&pr)
-		res := ResponseInfo(data, pr)
-		help = append(help, res)
-	}
+	config.DB.Select("orders_infos.id as id,order_id,orders_infos.produit_id,orders_infos.quality,orders_infos.quantity,orders_infos.echeance,orders_infos.served_quantity,products.id as productId,products.names").Joins("inner join products on productId=orders_infos.produit_id").
+		Find(&info, "orders_infos.order_id=?", c.Param("id")).Scan(&help)
+	// for _, data := range info {
+	// 	var pr models.Products
+	// 	config.DB.Select("names,id").Where("id", data.ProduitId).Find(&pr)
+	// 	res := ResponseInfo(data, pr)
+	// 	help = append(help, res)
+	// }
 	if len(help) > 0 {
 		c.JSON(200, help)
 	} else {
