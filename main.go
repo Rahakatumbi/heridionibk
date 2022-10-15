@@ -27,7 +27,7 @@ func main() {
 	// infrastructure.NewDatabase() //new database connection
 	config.SetupDB()
 
-	app.Run(":8080")
+	app.Run(":5004")
 	// app.Run(":5004")
 	// app.Run("192.168.43.174:5004")
 }
