@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/Raha2071/heridionibd/models"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -14,19 +14,17 @@ func SetupDB() {
 	// DB_HOST := os.Getenv("DB_HOST")
 	// DB_DBNAME := os.Getenv("DB_DATABASE")
 
-	// URL := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local", DB_USER, DB_PASS,
-	// 	DB_HOST, DB_DBNAME)
-	// db, err := gorm.Open(mysql.Open(URL))
-	// dsn := "root:admin@tcp(localhost:3306)/coffeedb?charset=utf8mb4&parseTime=True&loc=Local"
-	// db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
-	//mysqlite
-	db, err := gorm.Open(sqlite.Open("coffeedb.db"), &gorm.Config{})
+	// URL := fmt.Sprintf("%s:%s@tcp(%s)/%s?
+	dsn := "root:admin@tcp(localhost:3306)/coffeedb?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err.Error())
 	}
+	//mysqlite
+	// db, err := gorm.Open(sqlite.Open("coffeedb.db"), &gorm.Config{})
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
 	DB = db
 	db.AutoMigrate(&models.Users{}, models.Achats{}, models.Banques{}, models.Branche{},
 		models.Clients{}, models.Clients{}, models.Invoice{}, models.InvoiceInfo{}, models.Products{},
