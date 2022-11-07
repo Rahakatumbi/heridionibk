@@ -66,7 +66,7 @@ func Orders(c *gin.Context) {
 	var orders []models.Orders
 	var helper []ResponseData
 	//config.DB.Find(&orders
-	config.DB.Model(&orders).Select("orders.id as id,orders.type,orders.created_at,orders.mode_de_payement,orders.status,orders.client_id,clients.id as clientId,clients.names").Joins("inner join clients on clientId=orders.client_id").Scan(&helper)
+	config.DB.Model(&orders).Select("orders.id as id,orders.type,orders.created_at,orders.mode_de_payement,orders.status,orders.client_id,clients.id as clientId,clients.names").Joins("inner join clients on clients.id=orders.client_id").Scan(&helper)
 	if len(helper) > 0 {
 		c.JSON(200, helper)
 	} else {
@@ -91,7 +91,7 @@ func ResponseInfo(info models.OrdersInfo, pro models.Products) Inforesponse {
 func OrderInfos(c *gin.Context) {
 	var info []models.OrdersInfo
 	var help []Inforesponse
-	config.DB.Select("orders_infos.id as id,order_id,orders_infos.produit_id,orders_infos.quality,orders_infos.quantity,orders_infos.echeance,orders_infos.served_quantity,products.id as productId,products.names").Joins("inner join products on productId=orders_infos.produit_id").
+	config.DB.Select("orders_infos.id as id,order_id,orders_infos.produit_id,orders_infos.quality,orders_infos.quantity,orders_infos.echeance,orders_infos.served_quantity,products.id as productId,products.names").Joins("inner join products on products.id=orders_infos.produit_id").
 		Find(&info, "orders_infos.order_id=?", c.Param("id")).Scan(&help)
 	// for _, data := range info {
 	// 	var pr models.Products
