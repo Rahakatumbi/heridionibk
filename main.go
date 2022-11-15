@@ -22,6 +22,8 @@ func main() {
 
 	}))
 	router := app.Group("/api/v1")
+
+	app.Static("/assets", "./public/docs/"+app.BasePath())
 	api.Setup(router)
 	infrastructure.LoadEnv()
 	// infrastructure.NewDatabase() //new database connection

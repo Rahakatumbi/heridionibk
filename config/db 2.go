@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+
 	"github.com/Raha2071/heridionibd/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -37,5 +38,6 @@ func SetupDB() {
 		models.Orders{}, models.OrdersInfo{}, models.AchatsInfos{}, models.FinancementOrder{},
 	)
 	db.AutoMigrate(&models.AchatsInfos{}, models.TraitementInfo{})
+	db.AutoMigrate(&models.FinancementDepot{}, models.FinancementInfo{}, models.Depenses{}, models.Documents{})
 
 }

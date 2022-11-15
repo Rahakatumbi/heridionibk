@@ -66,7 +66,22 @@ func Orders(c *gin.Context) {
 	var orders []models.Orders
 	var helper []ResponseData
 	//config.DB.Find(&orders
-	config.DB.Model(&orders).Select("orders.id as id,orders.type,orders.created_at,orders.mode_de_payement,orders.status,orders.client_id,clients.id as clientId,clients.names").Joins("inner join clients on clients.id=orders.client_id").Scan(&helper)
+	config.DB.Model(&orders).Select("orders.id as id,orders.type,orders.created_at,orders.mode_de_payement,orders.status,orders.client_id,clients.id as clientId,clients.names").
+		Joins("inner join clients on clients.id=orders.client_id").
+		Where("orders.status != 3 AND orders.status !=2").Scan(&helper)
+	if len(helper) > 0 {
+		c.JSON(200, helper)
+	} else {
+		c.JSON(200, orders)
+	}
+}
+func TraitOrders(c *gin.Context) {
+	var orders []models.Orders
+	var helper []ResponseData
+	//config.DB.Find(&orders
+	config.DB.Model(&orders).Select("orders.id as id,orders.type,orders.created_at,orders.mode_de_payement,orders.status,orders.client_id,clients.id as clientId,clients.names").
+		Joins("inner join clients on clients.id=orders.client_id").
+		Where("orders.status != 1").Scan(&helper)
 	if len(helper) > 0 {
 		c.JSON(200, helper)
 	} else {

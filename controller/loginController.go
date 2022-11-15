@@ -37,12 +37,12 @@ func Login(c *gin.Context) {
 	user := models.Users{}
 	config.DB.Where("code", loghelper.Username).Last(&user)
 	if user.Id == 0 {
-		c.JSON(200, gin.H{
+		c.JSON(401, gin.H{
 			"message": "Code d'Utilisateur ne Correspond pas.",
 		})
 	} else {
 		if err := bcrypt.CompareHashAndPassword(user.Password, []byte(loghelper.Password)); err != nil {
-			c.JSON(200, gin.H{
+			c.JSON(401, gin.H{
 				"message": "Le mot de passe est Incorrect.",
 			})
 		} else {

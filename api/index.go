@@ -5,6 +5,7 @@ import (
 	"github.com/Raha2071/heridionibd/controller/achats"
 	"github.com/Raha2071/heridionibd/controller/banque"
 	"github.com/Raha2071/heridionibd/controller/clients"
+	"github.com/Raha2071/heridionibd/controller/depensedocs"
 	"github.com/Raha2071/heridionibd/controller/products"
 	"github.com/Raha2071/heridionibd/controller/rapports"
 	"github.com/Raha2071/heridionibd/controller/ventes"
@@ -18,6 +19,10 @@ func Setup(app *gin.RouterGroup) {
 		admin.GET("/users", controller.Users)
 		admin.POST("/branche", controller.Branche)
 		admin.GET("/branche", controller.Branches)
+		admin.GET("/financement/:id", controller.FinancementByDepot)
+		admin.GET("/financements", controller.AllFinancement)
+		admin.POST("financement", controller.FinancementDepot)
+		admin.GET("balance/:id", controller.Finance)
 		admin.GET("/depotData/:id", controller.DepotData)
 		admin.POST("/achat", achats.Achat)
 		admin.GET("/achat", achats.Achats)
@@ -43,5 +48,10 @@ func Setup(app *gin.RouterGroup) {
 		admin.POST("/epport", rapports.Facturation)
 		admin.GET("/supllier/:id", clients.Search)
 		admin.POST("/login", controller.Login)
+		admin.POST("/depense", depensedocs.Depense)
+		admin.GET("/depense", depensedocs.Depenses)
+		admin.POST("/document", depensedocs.Document)
+		admin.GET("/document", depensedocs.Documents)
+		admin.GET("/doneorders", ventes.TraitOrders)
 	}
 }
