@@ -56,5 +56,6 @@ func Setup(app *gin.RouterGroup) {
 		admin.GET("/last_price", depensedocs.GetLastActivePrice)
 		admin.GET("/all_price", depensedocs.GetPriceList)
 		admin.POST("/addPrice", depensedocs.CreatePrice)
+		admin.GET("/achat/:id", achats.AchatBrancheById)
 	}
 }

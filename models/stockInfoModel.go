@@ -5,6 +5,7 @@ import "gorm.io/gorm"
 type AchatsInfos struct {
 	Id           uint    `json:"id" gorm:"primary_key"`
 	ProduitId    int     `json:"produit_id"`
+	PriceId      int     `json:"prix_id"`
 	AchatId      int     `json:"achat_id"`
 	Kgs          float32 `json:"kgs"`
 	ChampId      int     `json:"champ_id"`

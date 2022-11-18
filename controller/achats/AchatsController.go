@@ -16,6 +16,7 @@ type helperAchat struct {
 }
 type Info struct {
 	Id        int     `json:"id"`
+	Price     int     `json:"prix_id"`
 	ProduitId int     `json:"produit_id"`
 	Kgs       float32 `json:"kgs"`
 	UnitPrice float32 `json:"price"`
@@ -23,15 +24,16 @@ type Info struct {
 	ChampID   int     `json:"field_id"`
 }
 type HelperData struct {
-	Id         int                  `json:"id"`
-	BrancheId  int                  `json:"branche_id"`
-	SupplierId int                  `json:"supplier_id"`
-	CreatedBy  int                  `json:"creator"`
-	Data       []models.AchatsInfos `json:"data"`
+	Id          int                  `json:"id"`
+	Financement float32              `json:"financement"`
+	SupplierId  int                  `json:"fornisseur_id"`
+	CreatedBy   int                  `json:"creator"`
+	BrancheId   int                  `json:"branche_id"`
+	Data        []models.AchatsInfos `json:"data"`
 }
 
 func ResponseAchat(Achat models.Achats, Stock []models.AchatsInfos) HelperData {
-	return HelperData{Id: int(Achat.Id), SupplierId: Achat.SupplierId,
+	return HelperData{Id: int(Achat.Id), SupplierId: Achat.SupplierId, Financement: Achat.Financement,
 		CreatedBy: Achat.CreatedBy, Data: Stock}
 }
 
@@ -71,13 +73,38 @@ func Achat(c *gin.Context) {
 	for _, data := range helper.Info {
 		achatID := achat.Id
 		achatinfo := models.AchatsInfos{AchatId: int(achatID), ProduitId: data.ProduitId, Kgs: data.Kgs, UnitPrice: data.UnitPrice,
-			ChampId: data.ChampID, Qualite: data.Qualite}
+			ChampId: data.ChampID, Qualite: data.Qualite, PriceId: data.Price}
 		config.DB.Create(&achatinfo).Scan(&data)
 	}
 	//save info financement
 	config.DB.Create(&models.FinancementInfo{AchatId: int(achat.Id), Montant: check.Montant, DepotId: check.DepotId, Createdby: achat.CreatedBy})
 	c.JSON(200, helper)
 
+}
+
+type ResponseAchatData struct {
+	Id          uint    `json:"id" gorm:"primary_key"`
+	SupplierId  int     `json:"fornisseur_id"`
+	Names       string  `json:"supplier"`
+	Quantity    float32 `json:"quantity"`
+	ProduitId   int     `json:"produit_id"`
+	AchatInfoId int     `json:"achat_info_id"`
+	Qualite     int     `json:"qualite"`
+	Price       float32 `json:"price"`
+	Produit     string  `json:"produit"`
+}
+
+func AchatBrancheById(c *gin.Context) {
+	var achats []models.Achats
+	var res []ResponseAchatData
+	// config.DB.Find(&achats, "branche_id =?", c.Param("id")).Scan(&res)
+	config.DB.Select("achats.id as id, achats.supplier_id,achats_infos.id as achat_info_id,achats.branche_id,achats_infos.kgs as quantity,achats_infos.produit_id,achats_infos.qualite,achats_infos.unit_price as price,suppliers.id as sup,suppliers.names as names, suppliers.code,products.id as pro,products.names as produit").
+		Joins("inner join suppliers on suppliers.id =achats.supplier_id").
+		Joins("inner join achats_infos on achats_infos.achat_id = achats.id").
+		Joins("inner join products on products.id = achats_infos.produit_id").
+		Where("achats.branche_id =?", c.Param("id")).
+		Find(&achats).Scan(&res)
+	c.JSON(200, res)
 }
 
 // all achats head quater
