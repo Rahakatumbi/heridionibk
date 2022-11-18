@@ -53,5 +53,8 @@ func Setup(app *gin.RouterGroup) {
 		admin.POST("/document", depensedocs.Document)
 		admin.GET("/document", depensedocs.Documents)
 		admin.GET("/doneorders", ventes.TraitOrders)
+		admin.GET("/last_price", depensedocs.GetLastActivePrice)
+		admin.GET("/all_price", depensedocs.GetPriceList)
+		admin.POST("/addPrice", depensedocs.CreatePrice)
 	}
 }

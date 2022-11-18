@@ -165,24 +165,36 @@ type OrderItems struct {
 	Quality       int     `json:"quality"`
 	Quantity      float32 `json:"quantity"`
 }
+type ResponseDaTr struct {
+	Served float32 `json:"served_quantity"`
+	Used   float32 `json:"used_quantity"`
+}
 
+func ResponseTraitement(order models.OrdersInfo, achat models.AchatsInfos) ResponseDaTr {
+	return ResponseDaTr{Served: order.ServedQuantity, Used: achat.UsedQuantity}
+}
 func SolveOrder(c *gin.Context) {
 	var items Orderitem
 	c.ShouldBindJSON(&items)
+	response := []ResponseDaTr{}
 	for _, data := range items.Items {
 		var md models.OrdersInfo
 		var ach models.AchatsInfos
-		config.DB.Select("sum(served_quantity) as served_quantity, id").Where("id", data.Order_info_id).Find(&md)
-		config.DB.Select("sum(used_quantity) as used_quantity, id").Where("id", data.Achat_info_id).Find(&ach)
+		config.DB.Select("sum(served_quantity) as served_quantity, id, order_id").Where("id", data.Order_info_id).Find(&md)
+		config.DB.Select("sum(used_quantity) as used_quantity, id,achat_id").Where("id", data.Achat_info_id).Find(&ach)
 		usedqty := ach.UsedQuantity + data.Quantity
 		result := md.ServedQuantity + data.Quantity
 		nfo := models.OrdersInfo{Id: uint(data.Order_info_id), ServedQuantity: result}
-		achat := models.AchatsInfos{Id: uint(data.Order_info_id), UsedQuantity: usedqty}
+		achat := models.AchatsInfos{Id: uint(data.Achat_info_id), UsedQuantity: usedqty}
 		config.DB.Updates(&nfo)
 		config.DB.Updates(&achat)
 		traitement := models.TraitementInfo{OrderId: data.Order_id, ApprovisionInfoId: data.Achat_info_id, Quantity: data.Quantity,
 			Quality: data.Quality, ProductId: data.Produit_id, OrderInfoId: data.Order_info_id, BrancheId: data.Branche_id, CreatedBy: items.CreatedBy}
 		config.DB.Create(&traitement)
+
+		responseOrder := ResponseTraitement(md, ach)
+		response = append(response, responseOrder)
+
 	}
-	c.JSON(200, items)
+	c.JSON(200, response)
 }

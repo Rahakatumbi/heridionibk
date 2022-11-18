@@ -37,7 +37,7 @@ func SetupDB() {
 		models.Suppliers{}, models.Champs{}, models.Axes{}, models.ServedOrder{}, models.ServedOrderInfo{},
 		models.Orders{}, models.OrdersInfo{}, models.AchatsInfos{}, models.FinancementOrder{},
 	)
-	db.AutoMigrate(&models.AchatsInfos{}, models.TraitementInfo{})
+	db.AutoMigrate(&models.AchatsInfos{}, models.TraitementInfo{}, models.Prices{})
 	db.AutoMigrate(&models.FinancementDepot{}, models.FinancementInfo{}, models.Depenses{}, models.Documents{})
 
 }

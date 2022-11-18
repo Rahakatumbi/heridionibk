@@ -1,13 +1,9 @@
 package depensedocs
 
 import (
-	"net/http"
-	"path"
-
 	"github.com/Raha2071/heridionibd/config"
 	"github.com/Raha2071/heridionibd/models"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type HelperFrom struct {
@@ -21,40 +17,45 @@ type HelperFrom struct {
 
 func Document(c *gin.Context) {
 	c.MultipartForm()
-	file, handle, err := c.Request.FormFile("document")
-	// The file cannot be received.
-	help := HelperFrom{}
+	var help HelperFrom
 	c.ShouldBind(&help)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"message": "Mauvaise rqequette",
-			"error":   err.Error(),
-			"data":    help,
-		})
-		return
-	}
-	defer file.Close()
-	filename := path.Base(handle.Filename)
-	// destination, err := os.Create(filename)
+	// if help.Document == "" {
+	// 	file, handle, err := c.Request.FormFile("document")
+	// 	// The file cannot be received.
+	// 	if err != nil {
+	// 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+	// 			"message": "Mauvaise rqequette",
+	// 			"error":   err.Error(),
+	// 		})
+	// 		return
+	// 	}
+	// 	defer file.Close()
+	// 	filename := path.Base(handle.Filename)
+	// 	// destination, err := os.Create(filename)
 
-	newFileName := uuid.New().String() + filename
+	// 	newFileName := uuid.New().String() + filename
 
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"message": "Crash du System",
-			"error":   err.Error(),
-		})
-		return
-	}
-	// The file is received, so let's save it
-	if err := c.SaveUploadedFile(handle, "./public/docs/"+newFileName); err != nil {
-		c.AbortWithStatusJSON(200, gin.H{
-			"message": "Unable to save the file",
-			"error":   err,
-		})
-		return
-	}
-	config.DB.Save(&models.Documents{Id: uint(help.Id), Object: help.Object, Intitule: help.Intitule, Document: newFileName, Description: help.Description, Createdby: help.CreatedBy})
+	// 	if err != nil {
+	// 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+	// 			"message": "Crash du System",
+	// 			"error":   err.Error(),
+	// 		})
+	// 		return
+	// 	}
+
+	// 	// The file is received, so let's save it
+	// 	if err := c.SaveUploadedFile(handle, "./public/docs/"+newFileName); err != nil {
+	// 		c.AbortWithStatusJSON(200, gin.H{
+	// 			"message": "Unable to save the file",
+	// 			"error":   err,
+	// 		})
+	// 		return
+	// 	}
+	doc := models.Documents{Object: help.Object, Intitule: help.Intitule, Description: help.Description, Createdby: help.CreatedBy}
+	config.DB.Create(&doc)
+	// config.DB.Updates(&models.Documents{Id: doc.Id, Document: newFileName})
+	// }
+	c.JSON(200, doc)
 }
 func Documents(c *gin.Context) {
 	var document []models.Documents
